@@ -2,211 +2,190 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>codeKING35 Eggplant Snake</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>82-0 Basketball Draft Game</title>
+    <!-- Tailwind CSS for modern mobile-first styling -->
+    <script src="https://jsdelivr.net"></script>
     <style>
+        /* Mobile web-app optimizations to mimic native iPhone games */
         body {
-            background-color: #4A752C; /* Google Snake dark green */
-            color: white;
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-        #score-board {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            background-color: #578A34; /* Google Snake light green */
-            padding: 10px 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        canvas {
-            background-color: #A2D149; /* Google Snake checkerboard light */
-            border: 4px solid #578A34;
-            border-radius: 5px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-        #game-over-screen {
-            display: none;
-            position: absolute;
-            background-color: rgba(0, 0, 0, 0.85);
-            color: white;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            padding: 40px;
-            text-align: center;
-        }
-        button {
-            background-color: #E24422;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-        button:hover {
-            background-color: #B83216;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
     </style>
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between overflow-x-hidden">
 
-    <div id="score-board">🍆 Score: <span id="score">0</span></div>
-    
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <!-- Header Section -->
+    <header class="bg-slate-900 border-b border-slate-800 p-4 text-center sticky top-0 z-50 shadow-md">
+        <h1 class="text-2xl font-black tracking-wider text-amber-500 uppercase">82-0 Simulator</h1>
+        <p class="text-xs text-slate-400 mt-0.5">Draft the ultimate roster. Can you go undefeated?</p>
+    </header>
 
-    <div id="game-over-screen" id="gameOver">
-        <h1 style="color: #E24422; margin: 0 0 10px 0;">GAME OVER</h1>
-        <p>Your snake crashed!</p>
-        <button onclick="resetGame()">Play Again</button>
-    </div>
+    <!-- Main Content App Shell -->
+    <main class="flex-1 max-w-md w-full mx-auto px-4 py-6 flex flex-col gap-6">
+        
+        <!-- Current Lineup Display -->
+        <section class="bg-slate-900/60 rounded-2xl p-4 border border-slate-800/80 shadow-inner">
+            <h2 class="text-xs font-bold text-slate-400 tracking-wide uppercase mb-3 flex justify-between items-center">
+                <span>Your Roster</span>
+                <span id="roster-count" class="text-amber-500 font-mono">0 / 5</span>
+            </h2>
+            <div id="roster-slots" class="grid grid-cols-5 gap-2">
+                <!-- Javascript will dynamically inject the 5 slots here -->
+            </div>
+        </section>
 
+        <!-- Dynamic Game Interface Viewport -->
+        <section id="game-view" class="flex-1 flex flex-col justify-center min-h-[320px]">
+            <!-- Start Screen Template -->
+            <div id="start-screen" class="text-center py-8">
+                <div class="text-6xl mb-4 animate-bounce">🏀</div>
+                <h3 class="text-xl font-bold mb-2">Build Your Starting 5</h3>
+                <p class="text-sm text-slate-400 max-w-xs mx-auto mb-6">You will be given random historical pools of NBA stars. Choose one per round to build your record-breaking lineup.</p>
+                <button id="start-btn" class="w-full bg-amber-500 hover:bg-amber-600 active:scale-[0.98] transition text-slate-950 font-extrabold py-4 px-6 rounded-xl text-lg shadow-lg shadow-amber-500/20 cursor-pointer">
+                    Start Draft
+                </button>
+            </div>
+
+            <!-- Draft Selection Pool View (Hidden initially) -->
+            <div id="draft-screen" class="hidden flex flex-col gap-4">
+                <div class="text-center">
+                    <span id="current-position-tag" class="bg-amber-500/10 border border-amber-500/20 text-amber-500 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-wide">Drafting Point Guard</span>
+                </div>
+                <div id="draft-options" class="flex flex-col gap-3 mt-2">
+                    <!-- Dynamic Option Cards Inject Here -->
+                </div>
+            </div>
+
+            <!-- Final Season Simulation Results (Hidden initially) -->
+            <div id="results-screen" class="hidden text-center py-6 flex flex-col items-center">
+                <h3 class="text-xl font-black text-slate-400 uppercase tracking-widest mb-1">Season Completed</h3>
+                <div id="final-record" class="text-6xl font-black text-amber-500 tracking-tight my-4">82 - 0</div>
+                <div id="result-badge" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-sm font-bold px-4 py-1.5 rounded-full mb-6">✨ IMMORTAL SEASON ✨</div>
+                <p id="result-evaluation" class="text-sm text-slate-400 max-w-xs mb-8">This team is completely unstoppable. The greatest collection of talent ever assembled.</p>
+                <button id="restart-btn" class="w-full bg-slate-800 hover:bg-slate-700 active:scale-[0.98] transition border border-slate-700 font-bold py-3 px-6 rounded-xl text-md cursor-pointer">
+                    Draft New Team
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer Disclaimer -->
+    <footer class="p-4 text-center text-[10px] text-slate-600 border-t border-slate-900">
+        Interactive 82-0 Concept Simulation • Mobile Optimized 📲
+    </footer>
+
+    <!-- Game Logic Engine Script -->
     <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.gl ? canvas.getContext("2d") : canvas.getContext("2d");
-        const scoreElement = document.getElementById("score");
-        const gameOverScreen = document.getElementById("game-over-screen");
+        // Database of pool players separated by their actual positions, containing a calculated base rating metric.
+        const PLAYER_DATABASE = {
+            PG: [
+                { name: "Magic Johnson", rating: 97, era: "'87 Lakers" },
+                { name: "Stephen Curry", rating: 96, era: "'16 Warriors" },
+                { name: "Oscar Robertson", rating: 93, era: "'64 Royals" },
+                { name: "Steve Nash", rating: 91, era: "'06 Suns" },
+                { name: "Chris Paul", rating: 90, era: "'08 Hornets" }
+            ],
+            SG: [
+                { name: "Michael Jordan", rating: 99, era: "'96 Bulls" },
+                { name: "Kobe Bryant", rating: 97, era: "'06 Lakers" },
+                { name: "Dwyane Wade", rating: 93, era: "'09 Heat" },
+                { name: "James Harden", rating: 92, era: "'18 Rockets" },
+                { name: "Allen Iverson", rating: 89, era: "'01 Sixers" }
+            ],
+            SF: [
+                { name: "LeBron James", rating: 98, era: "'13 Heat" },
+                { name: "Larry Bird", rating: 96, era: "'86 Celtics" },
+                { name: "Kevin Durant", rating: 95, era: "'17 Warriors" },
+                { name: "Kawhi Leonard", rating: 93, era: "'19 Raptors" },
+                { name: "Carmelo Anthony", rating: 88, era: "'13 Knicks" }
+            ],
+            PF: [
+                { name: "Tim Duncan", rating: 96, era: "'03 Spurs" },
+                { name: "Giannis Antetokounmpo", rating: 95, era: "'21 Bucks" },
+                { name: "Kevin Garnett", rating: 94, era: "'04 Timberwolves" },
+                { name: "Charles Barkley", rating: 92, era: "'93 Suns" },
+                { name: "Dirk Nowitzki", rating: 91, era: "'11 Mavericks" }
+            ],
+            C: [
+                { name: "Kareem Abdul-Jabbar", rating: 98, era: "'72 Bucks" },
+                { name: "Shaquille O'Neal", rating: 97, era: "'00 Lakers" },
+                { name: "Hakeem Olajuwon", rating: 96, era: "'94 Rockets" },
+                { name: "Wilt Chamberlain", rating: 95, era: "'67 76ers" },
+                { name: "Nikola Jokic", rating: 95, era: "'23 Nuggets" }
+            ]
+        };
 
-        const gridSize = 20;
-        const tileCount = canvas.width / gridSize;
+        const POSITIONS = ['PG', 'SG', 'SF', 'PF', 'C'];
+        let currentRoundIndex = 0;
+        let draftedLineup = {};
 
-        let snake = [{ x: 10, y: 10 }];
-        let eggplant = { x: 5, y: 5 };
-        let dx = 1; // starting horizontal direction (moving right)
-        let dy = 0; // starting vertical direction
-        let score = 0;
-        let gameInterval;
-        let gameSpeed = 100; // lower number = faster game
+        // Cache DOM views
+        const rosterSlotsContainer = document.getElementById('roster-slots');
+        const rosterCountEl = document.getElementById('roster-count');
+        const startScreen = document.getElementById('start-screen');
+        const draftScreen = document.getElementById('draft-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const currentPosTag = document.getElementById('current-position-tag');
+        const draftOptionsContainer = document.getElementById('draft-options');
 
-        function startGame() {
-            placeEggplant();
-            gameInterval = setInterval(update, gameSpeed);
+        // Initialize empty slot view structure
+        function initRosterSlots() {
+            rosterSlotsContainer.innerHTML = '';
+            POSITIONS.forEach(pos => {
+                const div = document.createElement('div');
+                div.id = `slot-${pos}`;
+                div.className = "aspect-square bg-slate-950/80 border border-slate-800 rounded-xl flex flex-col items-center justify-center text-center p-1 text-[10px]";
+                div.innerHTML = `<span class="font-black text-slate-500 text-xs">${pos}</span><span class="text-slate-600 mt-0.5 truncate max-w-full font-medium">-</span>`;
+                rosterSlotsContainer.appendChild(div);
+            });
+            rosterCountEl.innerText = `0 / 5`;
         }
 
-        function update() {
-            moveSnake();
+        // Shuffle arrays helper
+        function getRandomPool(array, count = 3) {
+            const shuffled = [...array].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
 
-            if (checkGameOver()) {
-                clearInterval(gameInterval);
-                gameOverScreen.style.display = "flex";
+        // Trigger step drafting sequence
+        function startDraftSequence() {
+            currentRoundIndex = 0;
+            draftedLineup = {};
+            initRosterSlots();
+            
+            startScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+            draftScreen.classList.remove('hidden');
+            
+            loadNextDraftRound();
+        }
+
+        // Load visual pool choices for active targeted position roster slot
+        function loadNextDraftRound() {
+            if (currentRoundIndex >= POSITIONS.length) {
+                concludeDraftAndSimulate();
                 return;
             }
 
-            checkEggplantCollision();
-            draw();
-        }
+            const activePosition = POSITIONS[currentRoundIndex];
+            currentPosTag.innerText = `Drafting Position: ${activePosition}`;
+            rosterCountEl.innerText = `${currentRoundIndex} / 5`;
 
-        function draw() {
-            // Clear the board with alternating Google Snake style green background squares
-            for (let r = 0; r < tileCount; r++) {
-                for (let c = 0; c < tileCount; c++) {
-                    ctx.fillStyle = (r + c) % 2 === 0 ? "#A2D149" : "#A9D751";
-                    ctx.fillRect(c * gridSize, r * gridSize, gridSize, gridSize);
-                }
-            }
-
-            // Draw the Snake
-            snake.forEach((part, index) => {
-                ctx.fillStyle = index === 0 ? "#4674E9" : "#5280F6"; // Blue snake head, lighter blue body
-                ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize - 2, gridSize - 2);
-            });
-
-            // Draw the Eggplant 🍆 using text emoji styling
-            ctx.font = `${gridSize}px Arial`;
-            ctx.textBaseline = "top";
-            ctx.fillText("🍆", eggplant.x * gridSize, eggplant.y * gridSize);
-        }
-
-        function moveSnake() {
-            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
-            snake.unshift(head);
-            snake.pop();
-        }
-
-        function checkEggplantCollision() {
-            if (snake[0].x === eggplant.x && snake[0].y === eggplant.y) {
-                score++;
-                scoreElement.innerText = score;
-                
-                // Grow the snake by keeping the last tail position
-                const tail = { ...snake[snake.length - 1] };
-                snake.push(tail);
-                
-                placeEggplant();
-            }
-        }
-
-        function placeEggplant() {
-            eggplant.x = Math.floor(Math.random() * tileCount);
-            eggplant.y = Math.floor(Math.random() * tileCount);
-
-            // Make sure eggplant doesn't spawn on top of the snake's body
-            snake.forEach(part => {
-                if (part.x === eggplant.x && part.y === eggplant.y) {
-                    placeEggplant();
+            // Style highlight active target slot 
+            POSITIONS.forEach(pos => {
+                const el = document.getElementById(`slot-${pos}`);
+                if (pos === activePosition) {
+                    el.classList.add('border-amber-500/50', 'bg-amber-500/5');
+                } else {
+                    el.classList.remove('border-amber-500/50', 'bg-amber-500/5');
                 }
             });
-        }
 
-        function checkGameOver() {
-            const head = snake[0];
+            // Get random set of 3 players from pool database for current selection
+            const choices = getRandomPool(PLAYER_DATABASE[activePosition], 3);
+            draftOptionsContainer.innerHTML = '';
 
-            // Wall collisions
-            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-                return true;
-            }
-
-            // Self collisions (skip index 0 which is the head itself)
-            for (let i = 1; i < snake.length; i++) {
-                if (head.x === snake[i].x && head.y === snake[i].y) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        // Capture computer arrow keys
-        window.addEventListener("keydown", e => {
-            switch (e.key) {
-                case "ArrowUp":
-                    if (dy === 0) { dx = 0; dy = -1; }
-                    break;
-                case "ArrowDown":
-                    if (dy === 0) { dx = 0; dy = 1; }
-                    break;
-                case "ArrowLeft":
-                    if (dx === 0) { dx = -1; dy = 0; }
-                    break;
-                case "ArrowRight":
-                    if (dx === 0) { dx = 1; dy = 0; }
-                    break;
-            }
-        });
-
-        function resetGame() {
-            snake = [{ x: 10, y: 10 }];
-            dx = 1;
-            dy = 0;
-            score = 0;
-            scoreElement.innerText = score;
-            gameOverScreen.style.display = "none";
-            clearInterval(gameInterval);
-            startGame();
-        }
-
-        // Fire up the engine!
-        startGame();
-    </script>
-</body>
-</html>
+            choices.forEach(player => {
