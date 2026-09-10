@@ -1,10 +1,212 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>codeKING35 Webspace</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>codeKING35 Eggplant Snake</title>
+    <style>
+        body {
+            background-color: #4A752C; /* Google Snake dark green */
+            color: white;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        #score-board {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background-color: #578A34; /* Google Snake light green */
+            padding: 10px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        canvas {
+            background-color: #A2D149; /* Google Snake checkerboard light */
+            border: 4px solid #578A34;
+            border-radius: 5px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        #game-over-screen {
+            display: none;
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: white;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+        }
+        button {
+            background-color: #E24422;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #B83216;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to codeKING35's Website!</h1>
-    <p>I am hand-coding this website entirely for free using GitHub Pages.</p>
+
+    <div id="score-board">🍆 Score: <span id="score">0</span></div>
+    
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <div id="game-over-screen" id="gameOver">
+        <h1 style="color: #E24422; margin: 0 0 10px 0;">GAME OVER</h1>
+        <p>Your snake crashed!</p>
+        <button onclick="resetGame()">Play Again</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.gl ? canvas.getContext("2d") : canvas.getContext("2d");
+        const scoreElement = document.getElementById("score");
+        const gameOverScreen = document.getElementById("game-over-screen");
+
+        const gridSize = 20;
+        const tileCount = canvas.width / gridSize;
+
+        let snake = [{ x: 10, y: 10 }];
+        let eggplant = { x: 5, y: 5 };
+        let dx = 1; // starting horizontal direction (moving right)
+        let dy = 0; // starting vertical direction
+        let score = 0;
+        let gameInterval;
+        let gameSpeed = 100; // lower number = faster game
+
+        function startGame() {
+            placeEggplant();
+            gameInterval = setInterval(update, gameSpeed);
+        }
+
+        function update() {
+            moveSnake();
+
+            if (checkGameOver()) {
+                clearInterval(gameInterval);
+                gameOverScreen.style.display = "flex";
+                return;
+            }
+
+            checkEggplantCollision();
+            draw();
+        }
+
+        function draw() {
+            // Clear the board with alternating Google Snake style green background squares
+            for (let r = 0; r < tileCount; r++) {
+                for (let c = 0; c < tileCount; c++) {
+                    ctx.fillStyle = (r + c) % 2 === 0 ? "#A2D149" : "#A9D751";
+                    ctx.fillRect(c * gridSize, r * gridSize, gridSize, gridSize);
+                }
+            }
+
+            // Draw the Snake
+            snake.forEach((part, index) => {
+                ctx.fillStyle = index === 0 ? "#4674E9" : "#5280F6"; // Blue snake head, lighter blue body
+                ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize - 2, gridSize - 2);
+            });
+
+            // Draw the Eggplant 🍆 using text emoji styling
+            ctx.font = `${gridSize}px Arial`;
+            ctx.textBaseline = "top";
+            ctx.fillText("🍆", eggplant.x * gridSize, eggplant.y * gridSize);
+        }
+
+        function moveSnake() {
+            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+            snake.unshift(head);
+            snake.pop();
+        }
+
+        function checkEggplantCollision() {
+            if (snake[0].x === eggplant.x && snake[0].y === eggplant.y) {
+                score++;
+                scoreElement.innerText = score;
+                
+                // Grow the snake by keeping the last tail position
+                const tail = { ...snake[snake.length - 1] };
+                snake.push(tail);
+                
+                placeEggplant();
+            }
+        }
+
+        function placeEggplant() {
+            eggplant.x = Math.floor(Math.random() * tileCount);
+            eggplant.y = Math.floor(Math.random() * tileCount);
+
+            // Make sure eggplant doesn't spawn on top of the snake's body
+            snake.forEach(part => {
+                if (part.x === eggplant.x && part.y === eggplant.y) {
+                    placeEggplant();
+                }
+            });
+        }
+
+        function checkGameOver() {
+            const head = snake[0];
+
+            // Wall collisions
+            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+                return true;
+            }
+
+            // Self collisions (skip index 0 which is the head itself)
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Capture computer arrow keys
+        window.addEventListener("keydown", e => {
+            switch (e.key) {
+                case "ArrowUp":
+                    if (dy === 0) { dx = 0; dy = -1; }
+                    break;
+                case "ArrowDown":
+                    if (dy === 0) { dx = 0; dy = 1; }
+                    break;
+                case "ArrowLeft":
+                    if (dx === 0) { dx = -1; dy = 0; }
+                    break;
+                case "ArrowRight":
+                    if (dx === 0) { dx = 1; dy = 0; }
+                    break;
+            }
+        });
+
+        function resetGame() {
+            snake = [{ x: 10, y: 10 }];
+            dx = 1;
+            dy = 0;
+            score = 0;
+            scoreElement.innerText = score;
+            gameOverScreen.style.display = "none";
+            clearInterval(gameInterval);
+            startGame();
+        }
+
+        // Fire up the engine!
+        startGame();
+    </script>
 </body>
 </html>
